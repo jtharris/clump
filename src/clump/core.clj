@@ -6,15 +6,17 @@
 
 (use 'korma.db 'korma.core)
 
-(defn -main
-  [& args]
+
+(defn import-csvs
+  [import-dir]
 
   ; Set up the database table
   (defdb target-db
     (sqlite3 {:db "resources/target.db"}))
 
-  (def directory (clojure.java.io/file (first args)))
-  (def files (filter #(.endsWith (.getName %) ".csv") (file-seq directory)))
+  (def directory (clojure.java.io/file import-dir))
+  (def files
+    (filter #(.endsWith (.getName %) ".csv") (file-seq directory)))
 
   ; TODO:  parallelize this?
   (doseq [file files]
@@ -22,6 +24,9 @@
     (def filename (.getName file))
     (def table-name (.substring filename 0 (- (count filename) 4)))
     (create-entity table-name)
+
+    ; Also clean out any rows that are there
+    (delete table-name)
 
     (let [file-data
       (with-open [f (io/reader file)]
@@ -36,9 +41,13 @@
       ; So this is the alternative
       (doseq [entity (map (partial zipmap (first file-data)) (rest file-data))]
         (insert table-name
-           (values entity)))))
+           (values entity))))))
 
-)
+
+
+(defn -main
+  [& args]
+  (import-csvs (first args)))
 
 
 
