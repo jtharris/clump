@@ -8,4 +8,7 @@
                  [korma "0.3.0-RC6"]
                  ;; Just starting w/ SQLite for now I guess...
                  [org.xerial/sqlite-jdbc "3.7.2"]]
+  :profiles {:dev {:dependencies [[speclj "2.9.1"]]}}
+  :plugins [[speclj "2.9.1"]]
+  :test-paths ["spec"]
   :main clump.core)
