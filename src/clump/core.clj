@@ -6,6 +6,10 @@
 
 (use 'korma.db 'korma.core)
 
+(defn load-file[file]
+  (with-open [f (io/reader file)]
+    (doall
+     (csv/read-csv f))))
 
 (defn import-csvs
   [import-dir]
@@ -28,10 +32,7 @@
     ; Also clean out any rows that are there
     (delete table-name)
 
-    (let [file-data
-      (with-open [f (io/reader file)]
-        (doall
-          (csv/read-csv f)))]
+    (let [file-data (load-file file)]
 
 
       ; This shit should work according to the docs but the list version of 'values' is all fubar for some reason
