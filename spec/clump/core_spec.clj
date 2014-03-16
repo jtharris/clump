@@ -13,3 +13,31 @@
      (should= ["Audi"     "TT"      "98234dkfs"    ] (nth @car-data 4))
      (should= ["Toyota"   "MR2"     "9723jfa9"     ] (nth @car-data 5))
      (should= ["Mercades" "Benz"    "9839sdf"      ] (nth @car-data 6))))
+
+; Functional Tests
+(describe "Import CSVs"
+  (before-all
+    (import-csvs "resources/"))
+
+  (it "should import the car data correctly"
+    (korma.core/defentity cars)
+
+    (let [car-data (korma.core/select cars)]
+      (should= 6 (count car-data))
+      (should= {:make "Honda"    :model "Civic"   :vin "3429834129"   } (nth car-data 0))
+      (should= {:make "Honda"    :model "Accord"  :vin "2393195"      } (nth car-data 1))
+      (should= {:make "Ford"     :model "Mustang" :vin "92384912cfds2"} (nth car-data 2))
+      (should= {:make "Audi"     :model "TT"      :vin "98234dkfs"    } (nth car-data 3))
+      (should= {:make "Toyota"   :model "MR2"     :vin "9723jfa9"     } (nth car-data 4))
+      (should= {:make "Mercades" :model "Benz"    :vin "9839sdf"      } (nth car-data 5))))
+
+
+  (it "should import the user data correctly"
+    (korma.core/defentity users)
+
+    (let [user-data (korma.core/select users)]
+      (should= 4 (count user-data))
+      (should= {:first "Johnny"  :last "Hotrod"  :email "johnnyhotrod@hotmail.com"   } (nth user-data 0))
+      (should= {:first "Sally"   :last "Twotone" :email "sallyride@gmail.com"        } (nth user-data 1))
+      (should= {:first "Billy"   :last "Mayes"   :email "heybillymayeshere@yahoo.com"} (nth user-data 2))
+      (should= {:first "Someone" :last "Else"    :email "someotherguy@gmail.com"     } (nth user-data 3)))))
