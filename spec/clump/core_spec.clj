@@ -1,6 +1,7 @@
 (ns clump.core-spec
   (:require [speclj.core :refer :all]
-            [clump.core :refer :all]))
+            [clump.core :refer :all]
+            [clojure.java.jdbc :as j]))
 
 (describe "load-file"
  (with car-data (load-file "resources/cars.csv"))
@@ -24,19 +25,14 @@
 ; Functional Tests
 (describe "Import CSVs"
   (before-all
-    (korma.db/defdb test-db
-      (korma.db/sqlite3 {:db "resources/target.db"}))
-
-    (korma.core/defentity cars)
-    (korma.core/defentity users)
-    (korma.core/delete cars)
-    (korma.core/delete users)
+    (j/delete! target-db :cars [])
+    (j/delete! target-db :users [])
 
     (import-csvs
       (clojure.java.io/resource "../resources/")))
 
   (it "should import the car data correctly"
-    (let [car-data (korma.core/select cars)]
+    (let [car-data (j/query target-db "select * from cars")]
       (should= 6 (count car-data))
       (should= {:make "Honda"    :model "Civic"   :vin "3429834129"   } (nth car-data 0))
       (should= {:make "Honda"    :model "Accord"  :vin "2393195"      } (nth car-data 1))
@@ -47,7 +43,7 @@
 
 
   (it "should import the user data correctly"
-    (let [user-data (korma.core/select users)]
+    (let [user-data (j/query target-db "select * from users")]
       (should= 4 (count user-data))
       (should= {:first "Johnny"  :last "Hotrod"  :email "johnnyhotrod@hotmail.com"   } (nth user-data 0))
       (should= {:first "Sally"   :last "Twotone" :email "sallyride@gmail.com"        } (nth user-data 1))
