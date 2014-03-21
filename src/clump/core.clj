@@ -1,12 +1,11 @@
 (ns clump.core
   (:require [clojure.data.csv :as csv]
             [clojure.java.io :as io]
-            [clojure.java.jdbc :as j]))
+            [clojure.java.jdbc :as j]
+            [clojure.edn :as edn]))
 
-; Temp!
-(def target-db { :classname "org.sqlite.JDBC"
-                 :subprotocol "sqlite"
-                 :subname "resources/target.db"})
+(def config (edn/read-string (slurp "resources/config.edn")))
+(def target-db (:jdbc-connection config))
 
 (defn load-file
   [file]
