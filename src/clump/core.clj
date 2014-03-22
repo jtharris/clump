@@ -33,13 +33,29 @@
   (let [files (filter #(.endsWith (.getName %) ".csv") (file-seq (io/file import-dir)))]
     (doall (map #(import-data % (table-name %)) files))))
 
+
+(def tables-list
+  (j/with-db-connection [con target-db]
+    (doall
+      (j/result-set-seq
+        (-> (:connection con) .getMetaData (.getTables nil nil nil nil))))))
+
+(defn export-data
+  [table-map]
+  (let [table-name (:table_name table-map)]
+    (println (str "Exporting:  " table-name))))
+
+(defn export-csvs
+  [export-dir]
+  (doall (map export-data tables-list)))
+
 (defn -main
   [& args]
 
   (let [action (first args)]
     (cond
       (= action "import") (import-csvs (io/resource (str "../" (:input-dir config))))
-      (= action "export") (println "Exporting...")
+      (= action "export") (export-csvs (io/resource (str "../" (:output-dir config))))
       :else (println "Please specify 'import' or 'export'"))))
 
 
