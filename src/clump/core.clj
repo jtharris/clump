@@ -30,16 +30,17 @@
 (defn import-csvs
   [import-dir]
 
-  (def directory (clojure.java.io/file import-dir))
-  (def files
-    (filter #(.endsWith (.getName %) ".csv") (file-seq directory)))
-
-  (doall (map #(import-data % (table-name %)) files)))
-
+  (let [files (filter #(.endsWith (.getName %) ".csv") (file-seq (io/file import-dir)))]
+    (doall (map #(import-data % (table-name %)) files))))
 
 (defn -main
   [& args]
-  (import-csvs (first args)))
+
+  (let [action (first args)]
+    (cond
+      (= action "import") (import-csvs (io/resource (str "../" (:input-dir config))))
+      (= action "export") (println "Exporting...")
+      :else (println "Please specify 'import' or 'export'"))))
 
 
 
