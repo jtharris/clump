@@ -1,10 +1,11 @@
 (ns clump.core-spec
   (:require [speclj.core :refer :all]
             [clump.core :refer :all]
-            [clojure.java.jdbc :as j]))
+            [clojure.java.jdbc :as j]
+            [clojure.java.io :as io]))
 
 (describe "load-file"
- (with car-data (load-file "resources/cars.csv"))
+ (with car-data (load-file "resources/input/cars.csv"))
 
  (it "can load the cars.csv from disc"
      (should= ["make"     "model"   "vin"          ] (nth @car-data 0))
@@ -29,7 +30,7 @@
     (j/delete! target-db :users [])
 
     (import-csvs
-      (clojure.java.io/resource "../resources/")))
+      (clojure.java.io/resource "../resources/input")))
 
   (it "should import the car data correctly"
     (let [car-data (j/query target-db "select * from cars")]
@@ -50,3 +51,19 @@
       (should= {:first "Billy"   :last "Mayes"   :email "heybillymayeshere@yahoo.com"} (nth user-data 2))
       (should= {:first "Someone" :last "Else"    :email "someotherguy@gmail.com"     } (nth user-data 3)))))
 
+(describe "Import/Export parity"
+  (before-all
+    (j/delete! target-db :cars [])
+    (j/delete! target-db :users [])
+
+    (import-csvs
+      (clojure.java.io/resource "../resources/input"))
+
+    (export-csvs
+      (clojure.java.io/resource "../resources/output")))
+
+  (it "should export cars.csv correctly"
+    (should= (load-file "resources/input/cars.csv") (load-file "resources/output/cars.csv")))
+
+  (it "should export users.csv correctly"
+    (should= (load-file "resources/input/users.csv") (load-file "resources/output/users.csv"))))

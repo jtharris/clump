@@ -2,6 +2,6 @@
                    :subprotocol "sqlite"
                    :subname "resources/target.db"}
 
- :input-dir "resources/"
- :output-dir "out/"}
+ :input-dir "resources/input/"
+ :output-dir "resources/output/"}
 

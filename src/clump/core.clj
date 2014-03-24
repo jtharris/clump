@@ -41,13 +41,20 @@
         (-> (:connection con) .getMetaData (.getTables nil nil nil nil))))))
 
 (defn export-data
-  [table-map]
-  (let [table-name (:table_name table-map)]
-    (println (str "Exporting:  " table-name))))
+  [export-dir table-map]
+  (let [table-name (:table_name table-map)
+        table-data (j/query
+                      target-db (str "select * from " table-name)
+                      :as-arrays? true)]
+    (println (str "Exporting:  " table-name))
+
+    (with-open [f (io/writer (io/file export-dir (str table-name ".csv")))]
+      (csv/write-csv f (cons (map name (first table-data)) (rest table-data))))))
 
 (defn export-csvs
   [export-dir]
-  (doall (map export-data tables-list)))
+  (doall
+    (map (partial export-data export-dir) tables-list)))
 
 (defn -main
   [& args]
