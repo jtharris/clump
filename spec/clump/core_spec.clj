@@ -16,12 +16,12 @@
      (should= ["Toyota"   "MR2"     "9723jfa9"     ] (nth @car-data 5))
      (should= ["Mercades" "Benz"    "9839sdf"      ] (nth @car-data 6))))
 
-(describe "table-name"
+(describe "table-name-from-file"
   (it "should strip .csv extension"
-     (should= "dinosaurs" (table-name (clojure.java.io/file "dinosaurs.csv"))))
+     (should= "dinosaurs" (table-name-from-file (clojure.java.io/file "dinosaurs.csv"))))
 
   (it "should only strip .csv extension when dots in filename"
-     (should= "schema.database" (table-name (clojure.java.io/file "schema.database.csv")))))
+     (should= "schema.database" (table-name-from-file (clojure.java.io/file "schema.database.csv")))))
 
 ; Functional Tests
 (describe "Import CSVs"
