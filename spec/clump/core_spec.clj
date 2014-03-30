@@ -23,6 +23,25 @@
   (it "should only strip .csv extension when dots in filename"
      (should= "schema.database" (table-name-from-file (clojure.java.io/file "schema.database.csv")))))
 
+(describe "table-name-from-map"
+   (it "should allow no schema"
+     (should= "[testtable]" (table-name-from-map {:table_name "testtable"}))
+     (should= "[testtable]" (table-name-from-map {:table_name "testtable" :table_schem nil})))
+
+   (it "should separate schema and table name with a ."
+       (should= "[testingschema].[testingtable]"
+                (table-name-from-map {:table_name "testingtable" :table_schem "testingschema"}))))
+
+(describe "file-name"
+   (it "should allow no schema"
+     (should= "testtable.csv" (file-name {:table_name "testtable"}))
+     (should= "testtable.csv" (file-name {:table_name "testtable" :table_schem nil})))
+
+   (it "should separate schema and table name with a ."
+       (should= "testingschema.testingtable.csv"
+                (file-name {:table_name "testingtable" :table_schem "testingschema"}))))
+
+
 ; Functional Tests
 (describe "Import CSVs"
   (before-all

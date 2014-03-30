@@ -40,13 +40,13 @@
 
 (defn table-name-from-map
   [table-map]
-  (if (s/blank? (:table-schem table-map))
+  (if (s/blank? (:table_schem table-map))
      (str "[" (:table_name table-map) "]")
      (str "[" (:table_schem table-map) "].[" (:table_name table-map) "]")))
 
 (defn file-name
   [table-map]
-  (if (s/blank? (:table-schem table-map))
+  (if (s/blank? (:table_schem table-map))
      (str (:table_name table-map) ".csv")
      (str (:table_schem table-map) "." (:table_name table-map) ".csv")))
 
