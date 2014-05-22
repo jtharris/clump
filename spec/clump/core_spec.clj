@@ -102,3 +102,7 @@
     (it (str "should export " file " correctly")
       (should= (slurp (io/resource (str "resources/input/" file)))
                (slurp (io/resource (str "resources/output/" file)))))))
+
+(describe "ordered-tables"
+  (it "should order the tables correctly")
+    (should= ["users" "humans" "cars" "pets"] ordered-tables))

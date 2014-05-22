@@ -27,6 +27,13 @@
   (let [file-name (.getName file)]
     (.substring file-name 0 (- (count file-name) 4))))
 
+(defn table-name-from-map
+  [table-map]
+  (if (s/blank? (:table_schem table-map))
+    ;TODO:  Use db agnostic escaping here - this is MS SQL specific
+    (str "[" (:table_name table-map) "]")
+    (str "[" (:table_schem table-map) "].[" (:table_name table-map) "]")))
+
 (defn import-csvs
   [import-dir]
   (let [files (filter #(.endsWith (.getName %) ".csv") (file-seq (io/file import-dir)))]
@@ -35,7 +42,7 @@
 (defn find-dependent-tables
   [table-name]
   (j/with-db-connection [con target-db]
-    (map #({:table_name (:fktable_name %), :table_schem (:fktable_schem %)})
+    (map #(table-name-from-map {:table_name (:fktable_name %), :table_schem (:fktable_schem %)})
     (doall
       (j/result-set-seq
         (-> (:connection con) .getMetaData (.getImportedKeys nil nil table-name)))))))
@@ -47,12 +54,19 @@
       (j/result-set-seq
         (-> (:connection con) .getMetaData (.getTables nil nil nil (into-array String ["TABLE"])))))))
 
-(defn table-name-from-map
-  [table-map]
-  (if (s/blank? (:table_schem table-map))
-    ;TODO:  Use db agnostic escaping here - this is MS SQL specific
-    (str "[" (:table_name table-map) "]")
-    (str "[" (:table_schem table-map) "].[" (:table_name table-map) "]")))
+(defn add-to-tables
+  [table-list table]
+
+  (println table-list)
+  (println table)
+
+  ;(if (some #{table} table-list)
+  ;  table-list
+  ;  (conj (reduce add-to-tables table-list (find-dependent-tables table)) table)))
+
+(def ordered-tables
+  (reduce add-to-tables [] (map table-name-from-map tables-list)))
+  ;(reduce conj [] (map table-name-from-map tables-list)))
 
 (defn file-name
   [table-map]
