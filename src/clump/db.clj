@@ -7,10 +7,10 @@
 (defn find-dependent-tables
   [table-name]
   (j/with-db-connection [con target-db]
-    (map #({:table_name (:fktable_name %), :table_schem (:fktable_schem %)})
-    (doall
-      (j/result-set-seq
-        (-> (:connection con) .getMetaData (.getImportedKeys nil nil table-name)))))))
+    (map #(into {} {:table_name (:pktable_name %), :table_schem (:pktable_schem %)})
+      (doall
+        (j/result-set-seq
+          (-> (:connection con) .getMetaData (.getImportedKeys nil nil table-name)))))))
 
 (def tables-list
   (j/with-db-connection [con target-db]
