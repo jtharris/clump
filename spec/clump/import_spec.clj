@@ -4,7 +4,7 @@
             [clojure.java.jdbc :as j]
             [clump.db :as db]
             [clump.import :as ci]
-            [clump.db-spec :as db-spec]))
+            [clump.fixtures :as cf]))
 
 (describe "table-name-from-file"
   (it "should strip .csv extension"
@@ -15,8 +15,8 @@
 
 ; Functional Tests
 (describe "Import CSVs"
-  (before-all
-    (db-spec/setup-test-db)
+  (before
+    (cf/setup-test-db)
     (ci/import-csvs
       (io/resource "../resources/input")))
 

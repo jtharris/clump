@@ -1,14 +1,13 @@
 (ns clump.core-spec
   (:require [speclj.core :refer :all]
             [clojure.java.io :as io]
-            [clump.db :as db]
             [clump.export :as ce]
             [clump.import :as ci]
-            [clump.db-spec :as db-spec]))
+            [clump.fixtures :as cf]))
 
 (describe "Import/Export parity"
   (before-all
-    (db-spec/setup-test-db)
+    (cf/setup-test-db)
     (ci/import-csvs
       (io/resource "../resources/input"))
 
