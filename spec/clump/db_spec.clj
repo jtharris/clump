@@ -10,27 +10,31 @@
 
   (it "should fetch the correct table names"
     (let [table-names (map :table_name db/tables-list)]
-      (should= ["users" "humans" "pets" "colors" "cars"] table-names))))
+      (should= ["cars" "colors" "humans" "pets" "users"] table-names))))
 
 
-(describe "find-dependent-tables"
+(describe "find-fk-tables"
   (before cf/setup-test-db)
 
-  (it "should find no dependent tables for users table"
-    (should= [] (db/find-dependent-tables {:table_name "users"})))
+  (it "should find fk tables for users table"
+    (should= [{:table_name "humans" :table_schem nil}] (db/find-fk-tables {:table_name "users"})))
 
-  (it "should find dependent tables for humans table"
-    (should= [{:table_name "users", :table_schem nil}] (db/find-dependent-tables {:table_name "humans"})))
+  (it "should find fk tables for humans table"
+    (should= [{:table_name "cars" :table_schem nil} {:table_name "pets" :table_schem nil}]
+             (db/find-fk-tables {:table_name "humans"})))
 
-  (it "should find dependent tables for cars table"
-    (should= [{:table_name "humans", :table_schem nil}] (db/find-dependent-tables {:table_name "cars"})))
+  (it "should find no fk tables for cars table"
+    (should= [] (db/find-fk-tables {:table_name "cars"})))
 
-  (it "should find dependent tables for pets table"
-    (should= [{:table_name "humans", :table_schem nil}] (db/find-dependent-tables {:table_name "pets"}))))
+  (it "should find no fk tables for pets table"
+    (should= [] (db/find-fk-tables {:table_name "pets"})))
 
-(describe "ordered-tables-list"
+  (it "should find no fk tables for colors table"
+    (should= [] (db/find-fk-tables {:table_name "colors"}))))
+
+#_(describe "ordered-tables-list"
   (before cf/setup-test-db)
 
-  (xit "should find the correct table order"
-    (let [table-names (map :table_name (db/ordered-tables-list [] db/tables-list))]
+  (it "should find the correct table order"
+    (let [table-names (map :table_name (db/ordered-tables-list))]
       (should= ["users" "colors" "humans" "pets" "cars"] table-names))))

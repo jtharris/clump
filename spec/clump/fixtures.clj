@@ -6,7 +6,8 @@
   []
   (j/db-do-commands db/target-db "PRAGMA foreign_keys = OFF;")
   (doseq [table-name (map :table_name db/tables-list)]
-    (j/db-do-commands db/target-db (j/drop-table-ddl table-name)))
+    (j/db-do-commands db/target-db
+       (j/drop-table-ddl table-name)))
 
   (j/db-do-commands db/target-db
     (j/create-table-ddl :users
@@ -23,9 +24,9 @@
   (j/db-do-commands db/target-db
     (j/create-table-ddl :pets
                         [:id :integer "PRIMARY KEY"]
+                        [:owner_id :integer "REFERENCES humans(id)"]
                         [:species :text]
-                        [:name :text]
-                        [:owner_id :integer "REFERENCES humans(id)"]))
+                        [:name :text]))
 
   (j/db-do-commands db/target-db
     (j/create-table-ddl :colors
