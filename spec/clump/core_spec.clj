@@ -1,6 +1,7 @@
 (ns clump.core-spec
   (:require [speclj.core :refer :all]
             [clojure.java.io :as io]
+            [clojure.string :as s]
             [clump.export :as ce]
             [clump.import :as ci]
             [clump.fixtures :as cf]))
@@ -16,5 +17,5 @@
 
   (for [file ["cars.csv" "users.csv" "humans.csv"]]
     (it (str "should export " file " correctly")
-      (should= (slurp (io/resource (str "resources/input/" file)))
-               (slurp (io/resource (str "resources/output/" file)))))))
+      (should= (s/split-lines (slurp (str "resources/input/" file)))
+               (s/split-lines (slurp (str "resources/output/" file)))))))
